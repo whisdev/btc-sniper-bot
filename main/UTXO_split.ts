@@ -20,7 +20,7 @@ const SEED_PRIVATE_KEY: string = process.env.SEED_PRIVATE_KEY as string;
 // const WIF_PRIVATE_KEY: string = process.env.WIF_PRIVATE_KEY as string;
 
 
-const splitUTXO = async () => {
+export const splitUTXO = async () => {
   const wallet = new SeedWallet({ networkType: networkType, seed: SEED_PRIVATE_KEY });
   // const wallet = new WIFWallet({ networkType: networkType, privateKey: WIF_PRIVATE_KEY });
 
@@ -40,5 +40,3 @@ const splitUTXO = async () => {
   const txId = await pushBTCpmt(txHex, networkType);
   console.log(`Split_UTXO_TxId=======> ${txId}`)
 }
-
-splitUTXO();

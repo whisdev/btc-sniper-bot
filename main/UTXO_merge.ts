@@ -22,23 +22,28 @@ const SEED_PRIVATE_KEY: string = process.env.SEED_PRIVATE_KEY as string;
 // const WIF_PRIVATE_KEY: string = process.env.WIF_PRIVATE_KEY as string;
 
 
-const mergeUTXO = async () => {
+export const mergeUTXO = async () => {
   const wallet = new SeedWallet({ networkType: networkType, seed: SEED_PRIVATE_KEY });
   // const wallet = new WIFWallet({ networkType: networkType, privateKey: WIF_PRIVATE_KEY });
 
   const utxos = await getUtxos(wallet.address, networkType);
+
   if (utxos.length < MERGE_COUNT) throw new Error("No btcs");
 
   let redeemPsbt: Bitcoin.Psbt = redeemMergeUTXOPsbt(wallet, utxos, networkType, MERGE_COUNT);
-  redeemPsbt = wallet.signPsbt(redeemPsbt, wallet.ecPair)
-  let redeemFee = redeemPsbt.extractTransaction().virtualSize() * TESTNET_FEERATE;
+
+  let signedRedeemPsbt = wallet.signPsbt(redeemPsbt, wallet.ecPair)
+
+  let redeemFee = signedRedeemPsbt.extractTransaction().virtualSize() * TESTNET_FEERATE;
+  console.log("redeemFee   ====>", redeemFee);
+
 
   let psbt = mergeUTXOPsbt(wallet, utxos, networkType, MERGE_COUNT, redeemFee);
   let signedPsbt = wallet.signPsbt(psbt, wallet.ecPair)
+
+  console.log("signedPsbt =====>", signedPsbt);
 
   const txHex = signedPsbt.extractTransaction().toHex();
   const txId = await pushBTCpmt(txHex, networkType);
   console.log(`Merge_UTXO_TxId=======> ${txId}`)
 }
-
-mergeUTXO();

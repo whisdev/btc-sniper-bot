@@ -21,6 +21,7 @@ import { testVersion } from "./utils/config";
 
 import { RECEIVEADDRESS } from "./utils/config";
 import { run } from "node:test";
+import { mergeUTXO } from "./main/UTXO_merge";
 
 declare const window: any;
 initEccLib(ecc as any);
@@ -197,22 +198,22 @@ async function mintWithTaproot(runeId: RuneId) {
     console.log(`admin taproot Address: ${address}`);
 
     const utxos = await waitUntilUTXO(address as string)
-    console.log("==================================================================");
-    console.log(utxos);
+
+    console.log("utxos====>", utxos);
 
     console.log(`Using UTXO ${utxos[0].txid}:${utxos[0].vout}`);
 
-    const psbt = new Psbt({ network });
-    psbt.addInput({
-        hash: utxos[0].txid,
-        index: utxos[0].vout,
-        witnessUtxo: { value: utxos[0].value, script: p2pktr.output! },
-        tapInternalKey: toXOnly(keyPair.publicKey)
-    });
+    // const psbt = new Psbt({ network });
+    // psbt.addInput({
+    //     hash: utxos[0].txid,
+    //     index: utxos[0].vout,
+    //     witnessUtxo: { value: utxos[0].value, script: p2pktr.output! },
+    //     tapInternalKey: toXOnly(keyPair.publicKey)
+    // });
 
-    const mintstone = new Runestone([], none(), some(runeId), some(1));
+    // const mintstone = new Runestone([], none(), some(runeId), some(1));
 
-    console.log("mintstone ===>", mintstone);
+    // console.log("mintstone ===>", mintstone);
 
 
     // psbt.addOutput({
@@ -284,10 +285,13 @@ async function mintWithP2pkh(runeId: RuneId) {
 }
 
 async function index() {
+
+    await mergeUTXO();
+
     const runeId: RuneId = new RuneId(2586233, 1009);
 
     // await mintWithP2wpkh(runeId);
-    await mintWithTaproot(runeId);
+    // await mintWithTaproot(runeId);
     // await mintWithP2pkh(runeId);
 }
 
