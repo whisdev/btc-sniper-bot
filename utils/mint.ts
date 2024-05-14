@@ -110,7 +110,7 @@ export function toXOnly(pubkey: Buffer) {
     return pubkey.subarray(1, 33);
 }
 
-export function tweakSigner(signer: BTCSigner, opts: any = {}) {
+export function tweakSigner(signer: BTCSigner, opts: any = {}): BTCSigner {
     let privateKey: Uint8Array | undefined;
     if (!privateKey) {
         throw new Error("Private key is required for tweaking signer!");
